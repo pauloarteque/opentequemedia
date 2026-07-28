@@ -64,11 +64,19 @@ O script fica no **fim do corpo**, não no topo. Ler ~3 KB de HTML já em memór
 
 ### 2.5 Carimbo de build
 
-`buildId` vem de `.next/BUILD_ID` (gerado pelo Next a cada build, muda mesmo sem mudança de código quando não há commit disponível). `commit` vem de `git rev-parse --short HEAD` no momento do build, capturado em `src/generated/build-info.json` via script `prebuild`; ausente (não um valor velho) quando não há commit. Entrega: `GET /build` em texto puro, e cabeçalho `X-Openteque-Build` em toda resposta.
+`buildId` e `commit` são capturados no momento do build pelo script `prebuild` (`scripts/write-build-info.mjs`), gravados em `src/generated/build-info.json` e embutidos no bundle como import estático — nunca lidos do disco em tempo de requisição (ver §2.7). `commit` vem de `git rev-parse --short HEAD`, ausente (não um valor velho) quando não há commit; `buildId` é o mesmo valor quando há commit, ou um UUID por build quando não há — prova que o identificador vem do artefato, não é digitado. Entrega: `GET /build` em texto puro, e cabeçalho `X-Openteque-Build` em toda resposta.
 
 ### 2.6 Sem banco
 
 O caminho da URL carrega o destino inteiro. Nenhum destino vem de fora, nenhum é armazenado. Redirecionador aberto é impossível por construção.
+
+### 2.7 Falha honesta, nunca reserva plausível
+
+Existem dois tipos de degradação graciosa. Uma admite ignorância — campo ausente, status de erro, "indisponível" (ex.: `title`/`thumbnailUrl` podem faltar em §2.3b; `commit` é `null` sem git). A outra devolve um valor de reserva que PARECE uma resposta válida no lugar de admitir a falha. A primeira é aceitável em qualquer componente. A segunda nunca é aceitável num componente cuja função é reportar a verdade sobre o sistema.
+
+Caso concreto que motivou a regra: `getBuildStamp()` (§2.5) tinha um `catch` que devolvia `'(dev — sem build de produção)'` quando a leitura de `.next/BUILD_ID` falhava em runtime — o que aconteceria sempre no Worker do Cloudflare, inclusive em produção com build real rodando. HTTP 200, corpo com formato de resposta válida, mentira completa. A única rota que existe pra provar qual build está no ar teria mentido, com tudo verde — exatamente o problema que essa rota existe pra resolver, se manifestando dentro dela mesma.
+
+Regra: ao escrever ou revisar um `try/catch`, se o `catch` devolve algo que parece uma resposta válida em vez de admitir que a operação falhou, é bug, não resiliência — vale sobretudo pra qualquer coisa que reporte build, versão, saúde ou estado do sistema.
 
 ---
 
@@ -239,4 +247,6 @@ Guardar destino em banco, arquivo ou sessão é mudança de arquitetura com revi
 - `/c/@nome`: risco de o Instagram interpretar `@` como menção em legenda/bio (não no adesivo de Story, campo de URL dedicado). Teste pulado por decisão do usuário; `path-format.ts` deixa a correção barata se algum link quebrar.
 - `x-safari-https` é esquema não documentado pela Apple — pode mudar de comportamento.
 - Android sem o app do YouTube (Huawei/AOSP/Fire): intent não faz nada, link estático é o único resgate.
-- Se algum dia houver proxy/CDN na frente: qualquer reescrita de HTML (ex.: Rocket Loader) quebra a arquitetura — checar byte a byte contra o local antes de confiar em produção.
+- Cloudflare é proxy/CDN na frente desde a migração para Workers/OpenNext (28/07/2026) — o risco abaixo deixou de ser hipotético. Qualquer reescrita de HTML (Rocket Loader, Auto Minify, Email Obfuscation) quebra a arquitetura: a página inteligente depende do script embutido executar imediatamente, sem adiamento. A Cloudflare não documenta se essas transformações tocam resposta de Worker em domínio próprio — checagem byte a byte do HTML de produção contra o local (`npm run check:html-parity`) é portão obrigatório antes de qualquer deploy, não só na migração, com atenção especial ao bloco `<script>` embutido (alterado ali = Rocket Loader/Auto Minify agindo). Checado em 28/07/2026: a zona `tequemedia.com.br` inteira ainda está com NS da Hostinger (não da Cloudflare) — nenhum subdomínio (`open`, `www`, `playbook`, apex) passa pelo proxy da Cloudflare hoje. Isso muda quando `open.tequemedia.com.br` virar Custom Domain do Worker.
+- Worker Cloudflare: 918 KiB comprimido na migração para OpenNext (28/07/2026), contra limite de 3 MB (plano grátis) / 10 MB (pago) do plano de publicação. Linha de base — se alguma dependência futura fizer esse número saltar, investigar antes de aceitar.
+- `buildId` local (§2.5) vem do commit curto quando há git — num build local com alterações não commitadas, ele reporta o último commit enquanto o código rodando inclui trabalho não commitado. Não confiar em `buildId` sozinho pra saber "que código está rodando" em teste local; `builtAt` (também em `/build`) é o desempate.

@@ -3,6 +3,9 @@
   "version": "0.1.0",
   "private": true,
   "type": "module",
+  "engines": {
+    "node": "22.23.1"
+  },
   "scripts": {
     "prebuild": "node scripts/write-build-info.mjs",
     "predev": "node scripts/write-build-info.mjs",
@@ -14,7 +17,11 @@
     "check:tokens": "tsx scripts/check-no-raw-values.ts",
     "check:core": "tsx scripts/check-core-purity.ts",
     "check:bundle": "tsx scripts/check-client-bundle.ts",
-    "verify": "npm run check:tokens && npm run check:core && npm test"
+    "verify": "npm run check:tokens && npm run check:core && npm test",
+    "cf:build": "opennextjs-cloudflare build",
+    "cf:preview": "opennextjs-cloudflare build && opennextjs-cloudflare preview",
+    "cf:deploy": "opennextjs-cloudflare build && opennextjs-cloudflare deploy",
+    "check:html-parity": "tsx scripts/compare-production-html.ts"
   },
   "dependencies": {
     "next": "16.2.12",
@@ -23,6 +30,7 @@
     "server-only": "^0.0.1"
   },
   "devDependencies": {
+    "@opennextjs/cloudflare": "^1.20.2",
     "@testing-library/jest-dom": "7.0.0",
     "@testing-library/react": "16.3.2",
     "@types/node": "26.1.2",
@@ -33,6 +41,7 @@
     "tsx": "4.19.2",
     "typescript": "5.9.3",
     "vite-tsconfig-paths": "6.1.1",
-    "vitest": "4.1.10"
+    "vitest": "4.1.10",
+    "wrangler": "^4.115.0"
   }
 }
