@@ -1,0 +1,19 @@
+{
+  "permissions": {
+    "defaultMode": "plan",
+    "deny": [
+      "Read(//.env)",
+      "Read(//.env.*)",
+      "Read(//*.pem)",
+      "Read(//*.key)",
+      "Read(//*credential*)",
+      "Read(//*secret*)",
+      "Read(//.ssh/**)",
+      "Read(~/.ssh/**)"
+    ],
+    "ask": [
+      "Edit(//.claude/**)",
+      "Write(//.claude/**)"
+    ]
+  }
+}
