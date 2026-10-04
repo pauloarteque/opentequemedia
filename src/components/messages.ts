@@ -17,19 +17,19 @@ export function messageForFailure(reason: ParseFailureReason, detail?: string): 
     case 'HOST_NOT_ALLOWED':
       return detail ? `"${detail}" não é um endereço do YouTube.` : 'Esse não é um endereço do YouTube.'
     case 'UNSUPPORTED_CLIP':
-      return 'Clipes não abrem no aplicativo — use o link do vídeo completo, com o tempo inicial se quiser.'
+      return 'Clipes não abrem no aplicativo. Use o link do vídeo completo, com o tempo inicial se quiser.'
     case 'UNSUPPORTED_POST':
       return 'Publicações da comunidade do YouTube não são suportadas.'
     case 'UNSUPPORTED_SEARCH':
       return 'Isso é uma busca, não um vídeo, canal ou playlist.'
     case 'UNSUPPORTED_FEED':
-      return 'Isso é uma página inicial ou feed do YouTube — cole o link de um vídeo, canal ou playlist específico.'
+      return 'Isso é uma página inicial ou feed do YouTube. Cole o link de um vídeo, canal ou playlist específico.'
     case 'UNSUPPORTED_CHANNEL_TAB':
       return 'Cole o link do canal sem a aba (vídeos, shorts, playlists...).'
     case 'UNSUPPORTED_EMBED':
-      return 'Link de incorporação não é suportado — use o link de assistir ao vídeo.'
+      return 'Link de incorporação não é suportado. Use o link de assistir ao vídeo.'
     case 'PERSONAL_PLAYLIST':
-      return 'Essa playlist pertence a quem está olhando, não a quem compartilha — ela não pode virar link.'
+      return 'Essa playlist pertence a quem está olhando, não a quem compartilha. Ela não pode virar link.'
     case 'UNKNOWN_YOUTUBE_PATH':
       return 'Não reconheci esse formato de link do YouTube.'
     case 'MISSING_VIDEO_ID':

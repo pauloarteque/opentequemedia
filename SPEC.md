@@ -229,13 +229,17 @@ Título é entrada de terceiro. `<`, `>`, `&`, e U+2028/U+2029 escapados na seri
 
 ## 7. Página geradora
 
-Modo escuro fixo, sem seletor. De cima para baixo: topbar (logo+TEQUEMEDIA) → badge "Grátis e sem cadastro" → H1 → subtítulo → gerador acima da dobra (colar, validar, gerar, copiar) → 3 blocos de benefício → rodapé com CTA para `https://tequemedia.com.br`. Nenhuma cor/espaçamento/raio direto — sempre `src/core/tokens.ts`.
+Visual claro fixo, sem seletor, no modelo web TequeMedia (guia visual da marca). Fundo Fumaça Branca com grade, contorno preto, sombra dura, Bricolage Grotesque e Kalam servidas pelo próprio domínio via `next/font`. Na página o nome da ferramenta é Open TequeMedia e o da casa é TequeMedia. De cima para baixo: cabeçalho com o logotipo horizontal (arquivo SVG original em `public/`, nunca redesenhado) → selo "Grátis e sem cadastro" → H1 → gerador dentro de uma janela, na primeira tela do celular (colar, gerar, copiar) → comparação "Mesmo vídeo, dois caminhos" → faixa laranja de autoridade com os números confirmados da casa e o botão "Agendar meu diagnóstico" para `https://tequemedia.com.br/` → rodapé. Nenhuma cor/espaçamento/raio direto, sempre `src/core/tokens.ts`. Os tokens da superfície 1 têm prefixo `tq`, e a superfície 2 não usa nenhum deles. As classes `.tq-*` moram em `src/app/modelo-web.css` e as da página em `src/app/open.css`.
+
+**Comportamento do gerador.** Colar um link já gera. A validação roda ao gerar, não a cada tecla, e a recusa continua com mensagem específica por motivo (§3). Ao gerar, o campo perde o foco e o resultado é trazido para a área visível, porque no celular ele nasce abaixo da dobra.
+
+**Convite para o diagnóstico.** Janela não bloqueante que sobe 1,5 s depois de copiar o primeiro link, ou 20 s depois de gerar sem copiar. Uma vez por visita, com descanso de 14 dias depois de vista e de 60 dias depois do clique. O descanso é uma data em `localStorage` (chave `open-tq-convite-ate`). Nenhum destino, link gerado ou dado de quem usa é guardado, então §2.6 continua valendo. Os links de saída levam `utm_source=open-tequemedia` e `utm_medium=popup` ou `faixa`. Nada é medido dentro do openteque.
 
 ---
 
 ## 8. Fora de escopo
 
-Banco de dados, conta de usuário, painel de estatísticas, encurtador genérico, player embutido, analytics, internacionalização, modo claro. **Hospedagem/deploy** — do usuário, fora desta SPEC; nenhuma fase depende disso. `/build` NÃO está fora de escopo — é requisito (§2.5).
+Banco de dados, conta de usuário, painel de estatísticas, encurtador genérico, player embutido, analytics, internacionalização, modo escuro na página geradora. **Hospedagem/deploy** — do usuário, fora desta SPEC; nenhuma fase depende disso. `/build` NÃO está fora de escopo — é requisito (§2.5).
 
 Guardar destino em banco, arquivo ou sessão é mudança de arquitetura com revisão de segurança própria.
 

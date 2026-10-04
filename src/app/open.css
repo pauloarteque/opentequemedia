@@ -1,0 +1,102 @@
+/* Página do Open TequeMedia, por cima do modelo web (modelo-web.css). */
+
+.op-link-casa { white-space: nowrap; }
+@media (max-width: 520px) { .op-link-casa { display: none; } }
+
+.op-heroi {
+  display: grid;
+  grid-template-columns: minmax(0, 1.2fr) minmax(0, 0.9fr);
+  gap: clamp(28px, 5vw, var(--space-16));
+  align-items: center;
+  padding-block: clamp(20px, 4vw, 56px) var(--tq-secao);
+}
+.op-heroi__texto { display: grid; gap: clamp(14px, 2vw, 22px); justify-items: start; min-width: 0; }
+.op-heroi__texto .tq-selo { transform: rotate(-2deg); }
+.op-heroi__texto .tq-marca { white-space: nowrap; }
+.op-heroi__ferramenta { position: relative; min-width: 0; }
+
+/* rabisco de fundo, só no computador */
+.op-rabisco {
+  position: absolute;
+  z-index: 0;
+  right: -70px;
+  top: -54px;
+  width: 260px;
+  height: auto;
+  pointer-events: none;
+}
+.op-heroi__ferramenta .tq-janela { position: relative; z-index: 1; }
+
+/* celular. A ferramenta sobe para logo depois do título, e a frase de apoio
+   desce, para o campo e o botão caberem na primeira tela. */
+@media (max-width: 860px) {
+  .op-heroi { grid-template-columns: minmax(0, 1fr); gap: 14px; padding-top: var(--space-3); }
+  .op-heroi__texto { display: contents; }
+  .op-heroi__texto .tq-selo { justify-self: start; }
+  .op-heroi__ferramenta { order: 3; margin-top: var(--space-2); }
+  .op-heroi__texto .tq-apoio { order: 4; margin-top: var(--space-3); }
+  .op-rabisco { display: none; }
+}
+@media (max-width: 420px) {
+  .op-heroi .tq-heroi { font-size: 1.9375rem; }
+  .op-gerador { gap: var(--space-3); }
+}
+
+/* gerador */
+.op-gerador { display: grid; gap: 14px; }
+.op-resultado {
+  scroll-margin-block: 20px;
+  display: grid;
+  gap: var(--space-3);
+  margin-top: 6px;
+  padding: 14px;
+  background: var(--tq-casca);
+  border: var(--tq-traco) solid var(--tq-borda);
+  border-radius: var(--tq-raio-p);
+}
+.op-resultado__linha { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 10px; }
+.op-resultado__campo { min-height: 44px; font-weight: 500; text-overflow: ellipsis; }
+.op-resultado__nota { display: flex; align-items: center; gap: var(--space-2); }
+.op-resultado__nota svg { flex: none; width: 34px; height: 34px; }
+.op-ajuda { font-size: var(--tq-t-rotulo); color: var(--tq-tinta-2); }
+
+@media (max-width: 400px) {
+  .op-resultado__linha { grid-template-columns: minmax(0, 1fr); }
+}
+
+/* dois caminhos */
+.tq-secao.op-caminhos { padding-top: 0; }
+.op-caminhos { display: grid; gap: clamp(var(--space-6), 4vw, 40px); }
+.op-caminhos__titulo { display: grid; gap: 10px; }
+.op-caminhos__grade {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: clamp(20px, 3vw, var(--space-8));
+  align-items: stretch;
+}
+@media (max-width: 760px) { .op-caminhos__grade { grid-template-columns: minmax(0, 1fr); } }
+
+.op-caminho { display: flex; flex-direction: column; }
+.op-caminho__corpo { display: flex; flex-direction: column; gap: 20px; padding: clamp(18px, 4vw, 28px); flex: 1; }
+.op-caminho--comum { background: var(--tq-casca); box-shadow: none; }
+.op-caminho--comum .op-caminho__cabeca {
+  padding: 9px var(--space-4);
+  font-size: var(--tq-t-rotulo);
+  font-weight: 700;
+  line-height: 1.2;
+  border-bottom: var(--tq-traco) solid var(--tq-borda);
+}
+.op-caminho__fecho { margin-top: auto; font-weight: 700; padding-top: var(--space-4); border-top: 2px dashed var(--tq-borda); }
+
+/* faixa de autoridade, centralizada */
+.op-autoridade { display: grid; grid-template-columns: minmax(0, 1fr); gap: clamp(28px, 4vw, 44px); justify-items: center; text-align: center; }
+.op-autoridade__titulo { font-size: clamp(2.125rem, 1.2rem + 4.4vw, 4.25rem); max-width: 15ch; -webkit-text-stroke-width: 3px; text-shadow: 5px 5px 0 var(--tq-preto); }
+.op-autoridade .tq-prova { width: 100%; max-width: 920px; }
+.op-autoridade__acao { display: grid; grid-template-columns: minmax(0, 1fr); gap: clamp(20px, 3vw, 28px); justify-items: center; width: 100%; }
+.op-autoridade__acao p { max-width: 40ch; font-size: clamp(1.0625rem, 1rem + 0.5vw, 1.3125rem); font-weight: 500; line-height: 1.45; }
+@media (max-width: 480px) {
+  .op-autoridade__titulo { -webkit-text-stroke-width: 2px; text-shadow: 3px 3px 0 var(--tq-preto); }
+  .op-autoridade__acao .tq-botao { width: 100%; }
+}
+
+.op-assinatura { color: var(--tq-tinta); transform: rotate(-1.5deg); }

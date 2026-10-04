@@ -1,5 +1,6 @@
 /**
- * Fonte única dos design tokens TEQUEMEDIA (modo escuro — o único usado no openteque).
+ * Fonte única dos design tokens TEQUEMEDIA. Os tokens escuros originais servem à página
+ * inteligente (superfície 2). Os de prefixo tq servem ao gerador (superfície 1).
  * Transcrito de design-tokens-tequemedia.md. Nunca duplicar um valor solto no código:
  * scripts/check-no-raw-values.ts quebra o build se algum hex ou px aparecer fora daqui.
  */
@@ -77,6 +78,58 @@ export const lineHeightBody = '1.5'
 export const lineHeightSmall = '1.45'
 export const lineHeightMicro = '1.4'
 
+// ---------------------------------------------------------------------------
+// Superfície 1, modelo web TequeMedia (guia visual da marca, visual claro).
+// Tudo com prefixo tq. A superfície 2 não usa nenhum destes, e nenhum deles
+// entra em SMART_PAGE_TOKEN_NAMES. Ver SPEC.md §7.
+// ---------------------------------------------------------------------------
+
+export const tqLaranja = '#fe5b18'
+export const tqAmbar = '#f5b340'
+export const tqFumaca = '#f2f2f2'
+export const tqCasca = '#e4e3d1'
+export const tqNoite = '#161616'
+export const tqPreto = '#000000'
+export const tqBranco = '#ffffff'
+// só em aviso de erro
+export const tqErro = '#fc0000'
+export const tqPlaceholder = '#767676'
+export const tqGradeLinha = 'rgba(0, 0, 0, 0.045)'
+export const tqGradeLinhaForte = 'rgba(0, 0, 0, 0.06)'
+
+export const tqFundo = tqFumaca
+export const tqSuperficie = tqBranco
+export const tqTinta = tqNoite
+// texto de apoio, 7,9 de contraste sobre Fumaça
+export const tqTinta2 = '#4a4a4a'
+export const tqBorda = tqPreto
+
+// --fonte-bricolage e --fonte-kalam são criadas pelo next/font em src/app/layout.tsx
+export const tqDisplay = "var(--fonte-bricolage), system-ui, -apple-system, 'Segoe UI', sans-serif"
+export const tqMao = "var(--fonte-kalam), 'Comic Sans MS', cursive"
+
+// Os dois tamanhos fluidos de título (herói e seção) ficam em modelo-web.css, porque a
+// conta deles usa "+" e o validador de valor de token (isSafeCssValue) não aceita esse sinal.
+export const tqTCartao = '1.25rem'
+export const tqTCorpo = '1.0625rem'
+export const tqTPequeno = '0.9375rem'
+export const tqTRotulo = '0.875rem'
+// Kalam nunca abaixo de 16px
+export const tqTMao = '1.25rem'
+
+export const tqTraco = '3px'
+export const tqRaio = '14px'
+export const tqRaioP = '10px'
+// sombra dura, sempre para baixo e para a direita, como no logotipo
+export const tqSombra = `6px 6px 0 0 ${tqPreto}`
+export const tqSombraP = `4px 4px 0 0 ${tqPreto}`
+export const tqSombraConvite = `8px 8px 0 0 ${tqPreto}`
+export const tqGrade = '32px'
+
+export const tqLargura = '1120px'
+export const tqCalha = 'clamp(16px, 4vw, 32px)'
+export const tqSecao = 'clamp(48px, 8vw, 96px)'
+
 export const tokens = {
   colorBg,
   colorSurface,
@@ -135,6 +188,39 @@ export const tokens = {
   lineHeightBody,
   lineHeightSmall,
   lineHeightMicro,
+  tqLaranja,
+  tqAmbar,
+  tqFumaca,
+  tqCasca,
+  tqNoite,
+  tqPreto,
+  tqBranco,
+  tqErro,
+  tqPlaceholder,
+  tqGradeLinha,
+  tqGradeLinhaForte,
+  tqFundo,
+  tqSuperficie,
+  tqTinta,
+  tqTinta2,
+  tqBorda,
+  tqDisplay,
+  tqMao,
+  tqTCartao,
+  tqTCorpo,
+  tqTPequeno,
+  tqTRotulo,
+  tqTMao,
+  tqTraco,
+  tqRaio,
+  tqRaioP,
+  tqSombra,
+  tqSombraP,
+  tqSombraConvite,
+  tqGrade,
+  tqLargura,
+  tqCalha,
+  tqSecao,
 } as const
 
 export type TokenName = keyof typeof tokens

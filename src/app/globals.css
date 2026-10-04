@@ -1,34 +1,12 @@
-*,
-*::before,
-*::after {
-  box-sizing: border-box;
+/* Reset mínimo da superfície 1. O resto do visual mora em modelo-web.css. */
+:root {
+  color-scheme: light;
 }
 
 html,
 body {
   padding: 0;
   margin: 0;
-}
-
-body {
-  background: var(--color-bg);
-  color: var(--color-text);
-  font-family: var(--font-family);
-  -webkit-font-smoothing: antialiased;
-  text-rendering: optimizeLegibility;
-}
-
-a {
-  color: inherit;
-}
-
-button {
-  font-family: inherit;
-}
-
-:focus-visible {
-  outline: none;
-  box-shadow: var(--focus-ring);
 }
 
 img {

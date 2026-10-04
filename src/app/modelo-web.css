@@ -1,0 +1,340 @@
+/* ==========================================================================
+   Modelo web TequeMedia, v1.1.0. Base para sites, landing pages e ferramentas
+   da casa. Fonte: Guia Visual TequeMedia v1.1.0, Partes 3, 4, 6, 8.5 e 9.
+   Só a superfície 1 carrega este arquivo. As variáveis --tq-* e --space-* vêm
+   de src/core/tokens.ts, injetadas pelo layout. Visual único, claro.
+   ========================================================================== */
+
+/* ---------- base ---------- */
+
+*, *::before, *::after { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: var(--tq-fundo);
+  color: var(--tq-tinta);
+  font-family: var(--tq-display);
+  font-size: var(--tq-t-corpo);
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+h1, h2, h3, p { margin: 0; }
+h1, h2, h3 { text-wrap: balance; letter-spacing: -0.025em; line-height: 1.04; }
+p { text-wrap: pretty; }
+a { color: inherit; }
+button, input { font: inherit; color: inherit; }
+svg { display: block; }
+
+:focus-visible {
+  outline: var(--tq-traco) solid var(--tq-laranja);
+  outline-offset: 3px;
+}
+.tq-faixa :focus-visible { outline-color: var(--tq-preto); }
+
+/* ---------- estrutura de página ---------- */
+
+.tq-grade {
+  overflow-x: clip;
+  background-color: var(--tq-fundo);
+  background-image:
+    linear-gradient(var(--tq-grade-linha) 1px, transparent 1px),
+    linear-gradient(90deg, var(--tq-grade-linha) 1px, transparent 1px);
+  background-size: var(--tq-grade) var(--tq-grade);
+}
+
+.tq-conteiner {
+  width: 100%;
+  max-width: calc(var(--tq-largura) + 2 * var(--tq-calha));
+  margin-inline: auto;
+  padding-inline: var(--tq-calha);
+}
+
+.tq-secao { padding-block: var(--tq-secao); }
+
+/* cabeçalho. O arquivo do logotipo já traz a área livre embutida, então a
+   margem negativa só alinha o símbolo com a coluna de conteúdo. */
+.tq-topo {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+  padding-block: var(--space-1);
+}
+.tq-topo__logo { display: block; width: clamp(264px, 22vw + 180px, 304px); flex: none; margin: calc(-1 * var(--space-6)) 0 calc(-1 * var(--space-6)) -37px; }
+.tq-topo__logo img, .tq-topo__logo svg { width: 100%; height: auto; }
+
+/* ---------- tipografia ---------- */
+
+.tq-heroi { font-size: clamp(2.125rem, 1.4rem + 3.2vw, 3.25rem); font-weight: 800; }
+.tq-h2 { font-size: clamp(1.625rem, 1.2rem + 2vw, 2.5rem); font-weight: 800; }
+.tq-h3 { font-size: var(--tq-t-cartao); font-weight: 700; letter-spacing: -0.01em; line-height: 1.2; }
+.tq-apoio { color: var(--tq-tinta-2); max-width: 46ch; }
+
+/* marca-texto laranja. Um recurso de ênfase por tela. */
+.tq-marca {
+  background: var(--tq-laranja);
+  color: var(--tq-preto);
+  padding: 0 0.14em;
+  border-radius: 6px;
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
+}
+
+/* título adesivo, para fundo laranja ou foto */
+.tq-adesivo {
+  font-weight: 800;
+  color: var(--tq-branco);
+  -webkit-text-stroke: 2px var(--tq-preto);
+  paint-order: stroke fill;
+  text-shadow: 3px 3px 0 var(--tq-preto);
+  letter-spacing: -0.02em;
+  line-height: 1.04;
+}
+
+/* chamada manuscrita. Uma linha, Kalam negrito. */
+.tq-chamada {
+  font-family: var(--tq-mao);
+  font-weight: 700;
+  font-size: var(--tq-t-mao);
+  line-height: 1.2;
+}
+
+/* ---------- componentes ---------- */
+
+/* botão. Afunda ao clicar, a sombra some e ele se desloca no mesmo valor. */
+.tq-botao {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5em;
+  min-height: 52px;
+  padding: 0.7em 1.35em;
+  font-family: var(--tq-display);
+  font-size: var(--tq-t-corpo);
+  font-weight: 700;
+  line-height: 1.1;
+  text-decoration: none;
+  color: var(--tq-preto);
+  background: var(--tq-laranja);
+  border: var(--tq-traco) solid var(--tq-borda);
+  border-radius: var(--tq-raio);
+  box-shadow: var(--tq-sombra-p);
+  cursor: pointer;
+  transition: transform 80ms ease-out, box-shadow 80ms ease-out;
+}
+.tq-botao:hover { transform: translate(-1px, -1px); box-shadow: 5px 5px 0 0 var(--tq-borda); }
+.tq-botao:active { transform: translate(var(--space-1), var(--space-1)); box-shadow: 0 0 0 0 var(--tq-borda); }
+.tq-botao--claro { background: var(--tq-branco); }
+.tq-botao--noite { background: var(--tq-noite); color: var(--tq-branco); }
+.tq-botao--largo { width: 100%; }
+.tq-botao--g { min-height: 68px; padding: 0.75em 1.7em; font-size: clamp(1.1875rem, 1rem + 0.9vw, 1.4375rem); font-weight: 800; box-shadow: var(--tq-sombra); }
+.tq-botao--g:hover { box-shadow: 7px 7px 0 0 var(--tq-borda); }
+.tq-botao--g:active { transform: translate(6px, 6px); box-shadow: 0 0 0 0 var(--tq-borda); }
+.tq-botao--p { min-height: 44px; padding: 0.5em 1em; font-size: var(--tq-t-pequeno); border-radius: var(--tq-raio-p); }
+
+/* selo */
+.tq-selo {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5em;
+  padding: 0.3em 0.85em;
+  font-size: var(--tq-t-rotulo);
+  font-weight: 700;
+  line-height: 1.3;
+  background: var(--tq-branco);
+  border: var(--tq-traco) solid var(--tq-borda);
+  border-radius: 999px;
+  box-shadow: 3px 3px 0 0 var(--tq-borda);
+}
+.tq-selo::before {
+  content: "";
+  width: 0.6em;
+  height: 0.6em;
+  border-radius: 50%;
+  background: var(--tq-laranja);
+  border: 2px solid var(--tq-borda);
+}
+
+/* cartão */
+.tq-cartao {
+  background: var(--tq-superficie);
+  border: var(--tq-traco) solid var(--tq-borda);
+  border-radius: var(--tq-raio);
+  box-shadow: var(--tq-sombra);
+}
+
+/* janela. Componente central da marca. */
+.tq-janela {
+  background: var(--tq-superficie);
+  border: var(--tq-traco) solid var(--tq-borda);
+  border-radius: var(--tq-raio);
+  box-shadow: var(--tq-sombra);
+  overflow: hidden;
+}
+.tq-janela__barra {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  padding: 9px var(--space-3) 9px var(--space-4);
+  background: var(--tq-laranja);
+  border-bottom: var(--tq-traco) solid var(--tq-borda);
+  font-size: var(--tq-t-rotulo);
+  font-weight: 700;
+  line-height: 1.2;
+  color: var(--tq-preto);
+}
+.tq-janela__controles { flex: none; width: 66px; height: 18px; }
+.tq-janela__corpo { padding: clamp(18px, 4vw, 28px); }
+
+/* campo */
+.tq-rotulo { display: block; font-size: var(--tq-t-rotulo); font-weight: 700; margin-bottom: var(--space-2); }
+.tq-campo {
+  display: block;
+  width: 100%;
+  min-height: 52px;
+  padding: 0.6em 0.85em;
+  font-size: 1rem;               /* 1rem evita o zoom automático do iPhone */
+  background: var(--tq-branco);
+  color: var(--tq-tinta);
+  border: var(--tq-traco) solid var(--tq-borda);
+  border-radius: var(--tq-raio-p);
+}
+.tq-campo::placeholder { color: var(--tq-placeholder); }
+
+/* balão de explicação. Texto sempre preto. */
+.tq-balao {
+  position: relative;
+  padding: 0.7em 0.9em;
+  background: var(--tq-ambar);
+  color: var(--tq-preto);
+  font-size: var(--tq-t-pequeno);
+  line-height: 1.4;
+  border: var(--tq-traco) solid var(--tq-borda);
+  border-radius: var(--tq-raio-p);
+  border-top-left-radius: 0;
+}
+
+/* aviso de erro. Único lugar do vermelho. */
+.tq-erro {
+  display: flex;
+  gap: 0.6em;
+  align-items: flex-start;
+  padding: 0.7em 0.9em;
+  background: var(--tq-branco);
+  color: var(--tq-preto);
+  font-size: var(--tq-t-pequeno);
+  font-weight: 500;
+  line-height: 1.4;
+  border: var(--tq-traco) solid var(--tq-borda);
+  border-radius: var(--tq-raio-p);
+}
+.tq-erro::before {
+  content: "!";
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 1.4em;
+  height: 1.4em;
+  font-weight: 800;
+  color: var(--tq-branco);
+  background: var(--tq-erro);
+  border: 2px solid var(--tq-borda);
+  border-radius: var(--space-1);
+}
+
+/* lista de marcadores, certo e errado */
+.tq-lista { list-style: none; margin: 0; padding: 0; display: grid; gap: 14px; }
+.tq-lista li { display: grid; grid-template-columns: 26px 1fr; gap: var(--space-3); align-items: start; }
+.tq-lista li > span { min-width: 0; }
+.tq-lista svg { width: 26px; height: 26px; margin-top: 1px; }
+
+/* faixa de impacto, laranja em área cheia */
+.tq-faixa {
+  background-color: var(--tq-laranja);
+  background-image:
+    linear-gradient(var(--tq-grade-linha-forte) 1px, transparent 1px),
+    linear-gradient(90deg, var(--tq-grade-linha-forte) 1px, transparent 1px);
+  background-size: var(--tq-grade) var(--tq-grade);
+  color: var(--tq-preto);
+  border-block: var(--tq-traco) solid var(--tq-borda);
+}
+
+/* número de prova */
+.tq-prova { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 20px; }
+.tq-prova__item { padding: 18px 20px; }
+.tq-prova__numero { display: block; font-size: clamp(1.75rem, 1.3rem + 1.8vw, 2.375rem); font-weight: 800; letter-spacing: -0.03em; line-height: 1; }
+.tq-prova__legenda { display: block; margin-top: 6px; font-size: var(--tq-t-pequeno); line-height: 1.3; }
+
+/* rodapé */
+.tq-rodape {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2) var(--space-6);
+  padding-block: 28px;
+  font-size: var(--tq-t-pequeno);
+  color: var(--tq-tinta-2);
+}
+
+/* convite. Janela que sobe depois da ação principal concluída. Não bloqueia a
+   página, fecha com um toque e nunca aparece antes de a pessoa ter o que veio buscar. */
+.tq-convite {
+  position: fixed;
+  z-index: 50;
+  left: 20px;                    /* no computador sobe do lado oposto ao da ferramenta */
+  bottom: calc(20px + env(safe-area-inset-bottom, 0px));
+  width: min(400px, calc(100vw - 40px));
+  animation: tq-sobe 220ms ease-out;
+}
+.tq-convite .tq-janela { box-shadow: var(--tq-sombra-convite); }
+.tq-convite .tq-janela__barra { padding-block: 5px; padding-right: 6px; }
+.tq-convite__fechar {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  margin-block: calc(-1 * var(--space-1));
+  padding: 0;
+  background: none;
+  border: 0;
+  cursor: pointer;
+}
+.tq-convite__corpo { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--space-3); padding: 18px 20px var(--space-3); }
+.tq-convite__corpo p { font-size: var(--tq-t-pequeno); line-height: 1.45; }
+.tq-convite__dispensar {
+  justify-self: center;
+  min-height: 44px;
+  padding: 0 var(--space-3);
+  background: none;
+  border: 0;
+  font-size: var(--tq-t-pequeno);
+  font-weight: 700;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  cursor: pointer;
+}
+@keyframes tq-sobe { from { transform: translateY(28px); opacity: 0; } to { transform: none; opacity: 1; } }
+@media (max-width: 520px) {
+  .tq-convite { left: var(--space-3); right: var(--space-3); bottom: calc(var(--space-3) + env(safe-area-inset-bottom, 0px)); width: auto; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tq-botao { transition: none; }
+  .tq-convite { animation: none; }
+}
+
+/* preenchimento e traço de SVG embutido. Cor nunca vai escrita no componente. */
+.tq-svg-caixa { fill: var(--tq-branco); stroke: var(--tq-preto); }
+.tq-svg-caixa--laranja { fill: var(--tq-laranja); stroke: var(--tq-preto); }
+.tq-svg-traco { fill: none; stroke: var(--tq-preto); }
+.tq-svg-rabisco { fill: none; stroke: var(--tq-laranja); }
+
+/* tela de aviso, usada pela página 404 */
+.tq-aviso-tela { min-height: 100vh; display: grid; place-items: center; padding: var(--tq-calha); }
+.tq-aviso-tela .tq-janela { width: min(440px, 100%); }
+.tq-aviso-tela .tq-janela__corpo { display: grid; gap: var(--space-4); justify-items: start; }

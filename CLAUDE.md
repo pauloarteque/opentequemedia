@@ -44,6 +44,9 @@ Especificação completa: [SPEC.md](SPEC.md). Cada diretiva abaixo aponta pra se
 ## Tokens (SPEC §7)
 
 - Toda cor, raio e espaçamento vem de `src/core/tokens.ts`. Valor hex ou `px` fora desse arquivo (exceto `0`/`1px` de borda) quebra `scripts/check-no-raw-values.ts`.
+- Tokens de prefixo `tq` são da superfície 1 (modelo web TequeMedia, visual claro) e nunca entram em `SMART_PAGE_TOKEN_NAMES`. A página inteligente continua nos tokens escuros originais.
+- Classes `.tq-*` moram em `src/app/modelo-web.css`, classes `.op-*` em `src/app/open.css`. Cor em SVG embutido vem das classes `.tq-svg-*`, nunca escrita no componente.
+- O logotipo entra pelo arquivo original em `public/`, nunca redesenhado nem redigitado. Na página o nome é TequeMedia e a ferramenta é Open TequeMedia.
 
 ## Build (SPEC §2.5)
 
@@ -51,4 +54,4 @@ Especificação completa: [SPEC.md](SPEC.md). Cada diretiva abaixo aponta pra se
 
 ## Fora de escopo (SPEC §8)
 
-Banco de dados, login, painel, encurtador genérico, player embutido, analytics, i18n, modo claro, configuração de hospedagem. Não implementar nem sugerir sem o usuário pedir de novo explicitamente.
+Banco de dados, login, painel, encurtador genérico, player embutido, analytics, i18n, modo escuro na página geradora, configuração de hospedagem. Não implementar nem sugerir sem o usuário pedir de novo explicitamente.
