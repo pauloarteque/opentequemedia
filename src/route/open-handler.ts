@@ -41,7 +41,8 @@ function htmlHeaders(csp: string): Record<string, string> {
 // silêncio — por isso a fase 7 tem um teste que recalcula o hash e compara.
 const SMART_PAGE_CSP = `default-src 'none'; script-src 'sha256-${OPEN_SCRIPT_SHA256}'; style-src 'unsafe-inline'; img-src ${IMG_SOURCES}; base-uri 'none'; form-action 'none'`
 const BOT_PAGE_CSP = `default-src 'none'; img-src ${IMG_SOURCES}`
-const ERROR_PAGE_CSP = `default-src 'none'`
+// A página de link quebrado tem estilo embutido e nenhum script. Ver SPEC.md §3.
+const ERROR_PAGE_CSP = `default-src 'none'; style-src 'unsafe-inline'`
 
 /**
  * O handler único por trás de /v, /s, /c, /p. Cada route.ts é uma chamada de 1 linha

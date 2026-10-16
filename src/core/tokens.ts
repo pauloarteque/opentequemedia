@@ -279,6 +279,34 @@ export const SMART_PAGE_TOKEN_NAMES: readonly TokenName[] = [
   'lineHeightH3',
 ]
 
+/**
+ * Página de link quebrado (superfície 2, src/server/error-page.ts). Mesma família escura da
+ * página inteligente, porque o espectador vê uma depois da outra, e nenhum token tq. Lista
+ * separada para a página inteligente não mudar um byte. Ver SPEC.md §3.
+ */
+export const ERROR_PAGE_TOKEN_NAMES: readonly TokenName[] = [
+  'colorBg',
+  'colorSurfaceRaised',
+  'colorText',
+  'colorTextSecondary',
+  'colorTextMuted',
+  'colorTextDisabled',
+  'colorPrimary',
+  'colorPrimaryHover',
+  'colorPrimaryActive',
+  'colorFocusRing',
+  'radiusMd',
+  'space3',
+  'space4',
+  'space6',
+  'space8',
+  'fontFamily',
+  'fontSizeH2',
+  'fontSizeBody',
+  'lineHeightH2',
+  'lineHeightBody',
+]
+
 export function subsetTokensToCssVars(names: readonly TokenName[]): string {
   const lines = names.map((name) => `  ${cssVarName(name)}: ${tokens[name]};`)
   return `:root {\n${lines.join('\n')}\n}`

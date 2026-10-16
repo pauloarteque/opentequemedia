@@ -118,6 +118,25 @@ describe('GeneratorForm — vídeo com playlist mostra aviso não-bloqueante', (
   })
 })
 
+describe('GeneratorForm — link colado junto com texto', () => {
+  it('mensagem inteira com o link no meio gera o link certo e avisa que pegou só o link', () => {
+    render(<GeneratorForm />)
+    pasteAndGenerate('olha o vídeo novo https://youtu.be/dQw4w9WgXcQ?si=xyz tá na mão')
+
+    const result = screen.getByLabelText('Link gerado') as HTMLTextAreaElement
+    expect(result.value).toBe('https://open.tequemedia.com.br/v/dQw4w9WgXcQ')
+    expect(screen.getByText('Peguei só o link do YouTube que estava no meio do texto.')).toBeInTheDocument()
+  })
+
+  it('texto sem link nenhum recusa com mensagem própria', () => {
+    render(<GeneratorForm />)
+    pasteAndGenerate('olha o vídeo novo do canal')
+
+    expect(screen.getByRole('alert')).toHaveTextContent('Não achei um link do YouTube nesse texto')
+    expect(screen.queryByLabelText('Link gerado')).not.toBeInTheDocument()
+  })
+})
+
 describe('GeneratorForm — copiar', () => {
   it('clicar em Copiar chama a área de transferência com o link exato', async () => {
     const writeText = vi.fn().mockResolvedValue(undefined)
@@ -129,6 +148,19 @@ describe('GeneratorForm — copiar', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Copiar' }))
     await vi.waitFor(() => expect(writeText).toHaveBeenCalledWith('https://open.tequemedia.com.br/v/dQw4w9WgXcQ'))
     expect(await screen.findByRole('button', { name: 'Copiado!' })).toBeInTheDocument()
+  })
+
+  it('sem área de transferência nem comando antigo, deixa o link selecionado e diz para copiar na mão', async () => {
+    const writeText = vi.fn().mockRejectedValue(new Error('negado'))
+    Object.defineProperty(navigator, 'clipboard', { value: { writeText }, configurable: true })
+    Object.defineProperty(document, 'execCommand', { value: vi.fn().mockReturnValue(false), configurable: true })
+
+    render(<GeneratorForm />)
+    pasteAndGenerate('https://www.youtube.com/watch?v=dQw4w9WgXcQ')
+
+    fireEvent.click(screen.getByRole('button', { name: 'Copiar' }))
+    expect(await screen.findByText(/é só copiar com o menu do aparelho/)).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Copiar' })).toBeInTheDocument()
   })
 })
 

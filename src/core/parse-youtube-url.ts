@@ -47,6 +47,64 @@ export function parseShareUrl(rawInput: string): ParseResult {
   return parseYouTubePath(url)
 }
 
+// Pontuação de frase que gruda no link quando ele vem de dentro de uma mensagem. Nenhum
+// destes caracteres aparece no começo ou no fim de um link do YouTube que o gerador aceita.
+const LEADING_PUNCTUATION_RE = /^[("'«“[{<]+/
+const TRAILING_PUNCTUATION_RE = /[.,;:!?)\]}"'»”>]+$/
+const WHITESPACE_RE = /\s/
+const WHITESPACE_RUN_RE = /\s+/
+
+function trimPunctuation(word: string): string {
+  return word.replace(LEADING_PUNCTUATION_RE, '').replace(TRAILING_PUNCTUATION_RE, '')
+}
+
+/**
+ * O que a pessoa colou no gerador -> Alvo | Recusa. Muita gente cola a mensagem inteira
+ * ("olha o vídeo novo https://youtu.be/… tá na mão") ou o link com o ponto final da frase.
+ * Sem espaço no texto, é parseShareUrl, tentando antes a versão sem a pontuação da frase.
+ * Com espaço, só conta como candidata a palavra cujo endereço está no allowlist (a mesma
+ * comparação exata de isAllowedHost), e vale a primeira que passar em parseShareUrl.
+ */
+export function parseSharedText(rawInput: string): ParseResult {
+  const raw = rawInput.trim()
+  if (raw.length > MAX_INPUT_LENGTH) return fail('INPUT_TOO_LONG')
+  if (!WHITESPACE_RE.test(raw)) return parseWord(raw)
+
+  const words = raw
+    .split(WHITESPACE_RUN_RE)
+    .map(trimPunctuation)
+    .filter((w) => w.length > 0)
+  const youtubeWords = words.filter((w) => {
+    const url = tryParseUrl(w)
+    return url !== null && isAllowedHost(url.hostname)
+  })
+
+  if (youtubeWords.length === 0) {
+    // Nenhuma palavra é endereço do YouTube. Se alguma é um endereço, a recusa mostra qual.
+    const otherLink = words.find((w) => /^https?:\/\//i.test(w))
+    return otherLink ? parseShareUrl(otherLink) : fail('NO_LINK_IN_TEXT')
+  }
+
+  let firstFailure: ParseResult | null = null
+  for (const word of youtubeWords) {
+    const result = parseShareUrl(word)
+    if (result.ok) return result
+    firstFailure ??= result
+  }
+  return firstFailure ?? fail('NO_LINK_IN_TEXT')
+}
+
+/** Uma palavra só: tenta antes sem a pontuação de frase, porque um handle aceita "," ou
+ * "." no fim e "…/@nome," viraria um canal errado. Sem sucesso, o motivo é o do original. */
+function parseWord(word: string): ParseResult {
+  const trimmed = trimPunctuation(word)
+  if (trimmed !== word && trimmed.length > 0) {
+    const result = parseShareUrl(trimmed)
+    if (result.ok) return result
+  }
+  return parseShareUrl(word)
+}
+
 function parseYouTubePath(url: URL): ParseResult {
   const host = url.hostname.toLowerCase().replace(/\.$/, '')
   const segments = url.pathname.split('/').filter((s) => s.length > 0)

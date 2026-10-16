@@ -3,8 +3,16 @@ import type { ParseFailureReason } from '@/core/types'
 /**
  * Mensagem específica por motivo de recusa — nunca uma mensagem genérica. Ver
  * SPEC.md §3 ("Falha fechada... mensagem específica por motivo").
+ *
+ * `linkDoOpen` só vem quando a pessoa colou de volta um link desta própria ferramenta:
+ * 'inteiro' se a rota abriria ele, 'quebrado' se não. A recusa diz isso em vez de dizer
+ * que não é um endereço do YouTube. Quem confere é GeneratorForm, com parseOpenUrl.
  */
-export function messageForFailure(reason: ParseFailureReason, detail?: string): string {
+export function messageForFailure(
+  reason: ParseFailureReason,
+  detail?: string,
+  linkDoOpen?: 'inteiro' | 'quebrado',
+): string {
   switch (reason) {
     case 'EMPTY_INPUT':
       return 'Cole um link do YouTube para começar.'
@@ -15,7 +23,13 @@ export function messageForFailure(reason: ParseFailureReason, detail?: string): 
     case 'UNSUPPORTED_SCHEME':
       return 'Esse tipo de endereço não é suportado.'
     case 'HOST_NOT_ALLOWED':
+      if (linkDoOpen === 'inteiro') return 'Esse link já foi gerado aqui. Pode usar direto no Story e na bio.'
+      if (linkDoOpen === 'quebrado') {
+        return 'Esse link do Open TequeMedia está incompleto. Cole o link do YouTube para gerar de novo.'
+      }
       return detail ? `"${detail}" não é um endereço do YouTube.` : 'Esse não é um endereço do YouTube.'
+    case 'NO_LINK_IN_TEXT':
+      return 'Não achei um link do YouTube nesse texto. Cole o link do vídeo, do canal ou da playlist.'
     case 'UNSUPPORTED_CLIP':
       return 'Clipes não abrem no aplicativo. Use o link do vídeo completo, com o tempo inicial se quiser.'
     case 'UNSUPPORTED_POST':

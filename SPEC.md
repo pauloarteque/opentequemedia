@@ -19,7 +19,7 @@ O openteque resolve isso trocando o link do YouTube por um link em `open.tequeme
 
 A separação não é só de estilo: as duas superfícies **não compartilham nenhum arquivo de renderização**. A superfície 2 não consegue importar um componente de marca porque não usa componentes.
 
-Único texto permitido na superfície 2: o rótulo funcional `Abrir no YouTube` e, no Android, `Não abriu? Toque aqui para assistir`.
+Único texto permitido na superfície 2: o rótulo funcional `Abrir no YouTube` e, no Android, `Não abriu? Toque aqui para assistir`. Na página de link quebrado (§3) entram também o título, uma frase de orientação e o botão `Ir para o YouTube`, sem marca.
 
 ---
 
@@ -124,7 +124,22 @@ Falha fechada vale para o FORMATO, nunca para a existência. Vídeo com incorpor
 
 ### Caminho não reconhecido
 
-Prefixo válido + ID inválido, ou prefixo inexistente → 404 mínimo sem marca, sem redirect.
+Prefixo válido + ID inválido, ou prefixo inexistente → 404 mínimo sem marca, sem redirect. A exceção é o texto colado depois do link, logo abaixo.
+
+### Texto colado depois do link
+
+Caso real de 15/10/2026. O adesivo de um Story foi preenchido com a mensagem inteira, `…/v/ID aooooo ta na mão`, e o link abria o 404. O Next.js entrega o segmento já decodificado, com o texto junto. Quando o caminho exato é recusado, a rota tenta aproveitar o identificador do começo do primeiro segmento, com quatro regras.
+
+1. Em `/v`, `/s` e `/p`, o identificador tem que estar inteiro no começo e terminar num caractere que não existe em identificador (espaço, `+`, ponto, vírgula). Tudo depois dele é descartado sem ser lido, inclusive os segmentos seguintes. Identificador pela metade, com caractere a mais ou com texto antes continua recusado.
+2. Em `/v`, o texto também pode ter caído no `?t=` (`/v/ID?t=95 tá na mão`). O `t` é cortado no primeiro espaço e o vídeo abre no segundo 95.
+3. Em `/c`, o corte é só no primeiro espaço, porque handle aceita caracteres fora do alfabeto de identificador. A pontuação de fim de frase do que sobrou sai junto, para `@nome,` não virar outro canal.
+4. Segmento com `%` continua recusado antes de tudo. O Next.js já decodificou uma vez, então o `%` que sobra é codificação dupla.
+
+O destino continua montado só a partir do identificador validado. Nada do texto chega ao YouTube nem à página. A lógica mora em `parse-openteque-path.ts`, o alfabeto em `ids.ts` (`leadingIdRun`) e o corte de `/c` em `path-format.ts` (`cutChannelSegmentsAtPastedText`).
+
+### Página de link quebrado
+
+Decisão do Paulo em 15/10/2026. O 404 deixou de ser uma linha de texto solta e virou uma página desenhada, revisada por um designer sênior. Continua sem marca, porque quem vê é o público do cliente, e usa a mesma família escura da página inteligente (`ERROR_PAGE_TOKEN_NAMES` em `tokens.ts`). Tem uma ilustração de link partido, o título `Esse link chegou quebrado`, uma frase que diz o que fazer e o botão `Ir para o YouTube`, que vai sempre para a página inicial do YouTube e nunca para um destino adivinhado. Sem script e sem rede, com estilo embutido, por isso o CSP dela é `default-src 'none'; style-src 'unsafe-inline'`. O botão usa texto escuro sobre o laranja, porque branco sobre laranja fica em 3,1:1 e não passa no contraste AA.
 
 ### Não indexar superfície 2
 
@@ -232,6 +247,12 @@ Título é entrada de terceiro. `<`, `>`, `&`, e U+2028/U+2029 escapados na seri
 Visual claro fixo, sem seletor, no modelo web TequeMedia (guia visual da marca). Fundo Fumaça Branca com grade, contorno preto, sombra dura, Bricolage Grotesque e Kalam servidas pelo próprio domínio via `next/font`. Na página o nome da ferramenta é Open TequeMedia e o da casa é TequeMedia. De cima para baixo: cabeçalho com o logotipo horizontal (arquivo SVG original em `src/components/`, importado como arquivo estático porque a hospedagem não serve `public/`, nunca redesenhado) → selo "Grátis e sem cadastro" → H1 → gerador dentro de uma janela, na primeira tela do celular (colar, gerar, copiar) → comparação "Mesmo vídeo, dois caminhos" → faixa laranja de autoridade com os números confirmados da casa e o botão "Agendar meu diagnóstico" para `https://tequemedia.com.br/` → rodapé. Nenhuma cor/espaçamento/raio direto, sempre `src/core/tokens.ts`. Os tokens da superfície 1 têm prefixo `tq`, e a superfície 2 não usa nenhum deles. As classes `.tq-*` moram em `src/app/modelo-web.css` e as da página em `src/app/open.css`.
 
 **Comportamento do gerador.** Colar um link já gera. A validação roda ao gerar, não a cada tecla, e a recusa continua com mensagem específica por motivo (§3). Ao gerar, o campo perde o foco e o resultado é trazido para a área visível, porque no celular ele nasce abaixo da dobra.
+
+**Texto colado no gerador.** Muita gente cola a mensagem inteira. Sem espaço no texto, vale `parseShareUrl`, tentando antes a versão sem a pontuação da frase (um handle aceita `,` e `.` no fim, e `…/@nome,` viraria outro canal). Com espaço, `parseSharedText` só considera a palavra cujo endereço está no allowlist, com a mesma comparação exata de `isAllowedHost`, e a página avisa que pegou só o link. Texto sem link recusa com mensagem própria. Um link já gerado aqui e colado de volta é lido com `parseOpenUrl`, como a rota leria, e a recusa diz se ele está inteiro ou incompleto.
+
+**Copiar.** Com o link pronto, o laranja passa para o botão Copiar e o Gerar link fica branco. O link aparece inteiro, quebrando linha, em vez de cortado. Se a área de transferência falhar, a página tenta o comando antigo de copiar e, se nem ele funcionar, deixa o link selecionado com uma dica. Em tela de toque, um botão Colar lê a área de transferência e já gera. Um aviso para leitor de tela diz quando o link ficou pronto e quando foi copiado.
+
+**Compartilhamento.** A imagem de compartilhamento (`opengraph-image.png` e `twitter-image.png`) e o ícone de tela inicial do iPhone (`apple-icon.png`) ficam em `src/app/`, feitos com o CSS do modelo web e o logotipo original. O `metadataBase` em `layout.tsx` é obrigatório para os endereços dessas imagens saírem absolutos.
 
 **Convite para o diagnóstico.** Janela não bloqueante que sobe 1,5 s depois de copiar o primeiro link, ou 20 s depois de gerar sem copiar. Uma vez por visita, com descanso de 14 dias depois de vista e de 60 dias depois do clique. O descanso é uma data em `localStorage` (chave `open-tq-convite-ate`). Nenhum destino, link gerado ou dado de quem usa é guardado, então §2.6 continua valendo. Os links de saída levam `utm_source=open-tequemedia` e `utm_medium=popup` ou `faixa`. Nada é medido dentro do openteque.
 

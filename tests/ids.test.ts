@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { isChannelId, isHandleBody, isLegacyName, isPersonalPlaylistId, isPlaylistId, isVideoId } from '@/core/ids'
+import { isChannelId, isHandleBody, isLegacyName, isPersonalPlaylistId, isPlaylistId, isVideoId, leadingIdRun } from '@/core/ids'
 
 describe('isVideoId', () => {
   it('aceita exatamente 11 caracteres do conjunto válido', () => {
@@ -106,5 +106,22 @@ describe('isPlaylistId', () => {
   it('recusa string vazia e lixo aleatório', () => {
     expect(isPlaylistId('')).toBe(false)
     expect(isPlaylistId('XYZ123')).toBe(false)
+  })
+})
+
+describe('leadingIdRun', () => {
+  it('segmento só com alfabeto de ID: trecho inteiro, sem sobra', () => {
+    expect(leadingIdRun('dQw4w9WgXcQ')).toEqual({ run: 'dQw4w9WgXcQ', hasTail: false })
+  })
+
+  it('para no primeiro caractere fora do alfabeto e marca a sobra', () => {
+    expect(leadingIdRun('dQw4w9WgXcQ tá na mão')).toEqual({ run: 'dQw4w9WgXcQ', hasTail: true })
+    expect(leadingIdRun('dQw4w9WgXcQ+x')).toEqual({ run: 'dQw4w9WgXcQ', hasTail: true })
+    expect(leadingIdRun('dQw4w9WgXcQ.')).toEqual({ run: 'dQw4w9WgXcQ', hasTail: true })
+  })
+
+  it('segmento que já começa fora do alfabeto devolve trecho vazio', () => {
+    expect(leadingIdRun(' dQw4w9WgXcQ')).toEqual({ run: '', hasTail: true })
+    expect(leadingIdRun('')).toEqual({ run: '', hasTail: false })
   })
 })

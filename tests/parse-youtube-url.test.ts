@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { isAllowedHost, parseShareUrl } from '@/core/parse-youtube-url'
+import { isAllowedHost, parseSharedText, parseShareUrl } from '@/core/parse-youtube-url'
 
 describe('isAllowedHost — comparação exata, nunca substring', () => {
   it('aceita os hosts da allowlist, incluindo maiúsculas', () => {
@@ -207,5 +207,84 @@ describe('parseShareUrl — sem protocolo explícito (tolerância de colagem)', 
   it('aceita sem https:// na frente', () => {
     const r = parseShareUrl('youtube.com/watch?v=dQw4w9WgXcQ')
     expect(r).toEqual({ ok: true, target: { kind: 'video', id: 'dQw4w9WgXcQ', startSeconds: null } })
+  })
+})
+
+describe('parseSharedText — link colado junto com texto', () => {
+  const VIDEO = { ok: true, target: { kind: 'video', id: 'GdvXYFCzSeg', startSeconds: null } }
+
+  it('sem espaço, é o mesmo que parseShareUrl', () => {
+    expect(parseSharedText('https://youtu.be/GdvXYFCzSeg')).toEqual(VIDEO)
+    expect(parseSharedText('https://vimeo.com/123')).toEqual(parseShareUrl('https://vimeo.com/123'))
+  })
+
+  it('mensagem inteira com o link no meio', () => {
+    expect(parseSharedText('olha o vídeo novo https://youtu.be/GdvXYFCzSeg?si=abc tá na mão')).toEqual(VIDEO)
+  })
+
+  it('link seguido de texto, o caso do adesivo de Story', () => {
+    expect(parseSharedText('https://www.youtube.com/watch?v=GdvXYFCzSeg aooooo ta na mão')).toEqual(VIDEO)
+  })
+
+  it('ponto final de frase grudado no link', () => {
+    expect(parseSharedText('https://youtu.be/GdvXYFCzSeg.')).toEqual(VIDEO)
+    expect(parseSharedText('assiste aqui: https://youtu.be/GdvXYFCzSeg!')).toEqual(VIDEO)
+  })
+
+  it('a palavra "youtube" solta não é tratada como link', () => {
+    expect(parseSharedText('vê no youtube https://youtu.be/GdvXYFCzSeg')).toEqual(VIDEO)
+  })
+
+  it('texto sem link nenhum -> NO_LINK_IN_TEXT', () => {
+    expect(parseSharedText('olha o vídeo novo do canal')).toEqual({ ok: false, reason: 'NO_LINK_IN_TEXT' })
+  })
+
+  it('texto com link que não é do YouTube mostra o endereço limpo', () => {
+    expect(parseSharedText('olha https://instagram.com/p/abc')).toEqual({
+      ok: false,
+      reason: 'HOST_NOT_ALLOWED',
+      detail: 'instagram.com',
+    })
+  })
+
+  it('link do YouTube recusado no meio do texto devolve o motivo dele', () => {
+    expect(parseSharedText('olha https://www.youtube.com/clip/abc')).toEqual({
+      ok: false,
+      reason: 'UNSUPPORTED_CLIP',
+      detail: '/clip/abc',
+    })
+  })
+
+  it('o aviso de playlist ignorada continua chegando', () => {
+    const r = parseSharedText('olha https://www.youtube.com/watch?v=GdvXYFCzSeg&list=PLC77007E23FF423C6 top')
+    expect(r.ok && r.ignoredPlaylist).toBe(true)
+  })
+
+  it('handle com pontuação de frase no fim não vira canal errado', () => {
+    const HANDLE = { ok: true, target: { kind: 'handle', handle: 'MrBeast' } }
+    expect(parseSharedText('https://www.youtube.com/@MrBeast.')).toEqual(HANDLE)
+    expect(parseSharedText('assiste: https://www.youtube.com/@MrBeast, top')).toEqual(HANDLE)
+  })
+
+  it('link entre parênteses ou aspas', () => {
+    expect(parseSharedText('o vídeo (https://youtu.be/GdvXYFCzSeg) saiu')).toEqual(VIDEO)
+    expect(parseSharedText('olha “https://youtu.be/GdvXYFCzSeg”')).toEqual(VIDEO)
+  })
+
+  it('"youtube." ou "YouTube/Instagram" soltos não são tratados como link', () => {
+    expect(parseSharedText('saiu vídeo no youtube.')).toEqual({ ok: false, reason: 'NO_LINK_IN_TEXT' })
+    expect(parseSharedText('me segue no YouTube/Instagram')).toEqual({ ok: false, reason: 'NO_LINK_IN_TEXT' })
+  })
+
+  it('endereço parecido com YouTube no meio do texto mostra o endereço', () => {
+    expect(parseSharedText('olha https://youtube.com.evil.tld/watch?v=GdvXYFCzSeg')).toEqual({
+      ok: false,
+      reason: 'HOST_NOT_ALLOWED',
+      detail: 'youtube.com.evil.tld',
+    })
+  })
+
+  it('texto longo demais continua recusado', () => {
+    expect(parseSharedText(`a ${'x'.repeat(3000)}`)).toEqual({ ok: false, reason: 'INPUT_TOO_LONG' })
   })
 })

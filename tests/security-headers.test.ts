@@ -75,7 +75,7 @@ describe('Cabeçalhos — presentes em toda resposta das rotas', () => {
 
     expect(res.status).toBe(404)
     expect(res.headers.get('x-robots-tag')).toBe('noindex, nofollow')
-    expect(res.headers.get('content-security-policy')).toBe("default-src 'none'")
+    expect(res.headers.get('content-security-policy')).toBe("default-src 'none'; style-src 'unsafe-inline'")
   })
 })
 
@@ -107,5 +107,21 @@ describe('Título hostil pela ROTA inteira (não só a função isolada)', () =>
     expect(html).not.toContain('<script>alert(1)</script>')
     // as duas tags de script legítimas (config + script embutido) continuam presentes
     expect((html.match(/<\/script>/g) ?? []).length).toBe(2)
+  })
+})
+
+describe('Texto colado depois do link pela ROTA inteira (SPEC.md §3)', () => {
+  it('o caso do adesivo de Story redireciona para o vídeo certo, sem nada do texto', async () => {
+    const handler = createOpenHandler('v')
+    const res = await handler(
+      makeRequest(
+        '/v/GdvXYFCzSeg%20aooooo%20ta%20na%20m%C3%A3o?fbclid=PAZ',
+        'Mozilla/5.0 (Windows NT 10.0; Win64; x64) Chrome/131.0 Safari/537.36',
+      ),
+      contextFor(['GdvXYFCzSeg aooooo ta na mão']),
+    )
+
+    expect(res.status).toBe(302)
+    expect(res.headers.get('location')).toBe('https://www.youtube.com/watch?v=GdvXYFCzSeg')
   })
 })

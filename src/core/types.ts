@@ -25,6 +25,7 @@ export type ParseFailureReason =
   | 'NOT_A_URL'
   | 'UNSUPPORTED_SCHEME'
   | 'HOST_NOT_ALLOWED'
+  | 'NO_LINK_IN_TEXT'
   // host reconhecido, caminho recusado deliberadamente
   | 'UNSUPPORTED_CLIP'
   | 'UNSUPPORTED_POST'

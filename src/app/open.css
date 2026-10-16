@@ -44,6 +44,9 @@
 
 /* gerador */
 .op-gerador { display: grid; gap: 14px; }
+.op-gerador__topo { display: flex; align-items: center; justify-content: space-between; gap: var(--space-3); margin-bottom: var(--space-2); }
+.op-gerador__topo .tq-rotulo { margin-bottom: 0; }
+.op-colar { flex: none; }
 .op-resultado {
   scroll-margin-block: 20px;
   display: grid;
@@ -54,15 +57,13 @@
   border: var(--tq-traco) solid var(--tq-borda);
   border-radius: var(--tq-raio-p);
 }
-.op-resultado__linha { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 10px; }
-.op-resultado__campo { min-height: 44px; font-weight: 500; text-overflow: ellipsis; }
+.op-resultado__linha { display: grid; grid-template-columns: minmax(0, 1fr); gap: 10px; }
+.op-resultado__campo { min-height: 44px; font-weight: 500; line-height: 1.35; resize: none; overflow: hidden; overflow-wrap: anywhere; }
+.op-resultado__dica { font-size: var(--tq-t-pequeno); line-height: 1.4; }
 .op-resultado__nota { display: flex; align-items: center; gap: var(--space-2); }
 .op-resultado__nota svg { flex: none; width: 34px; height: 34px; }
 .op-ajuda { font-size: var(--tq-t-rotulo); color: var(--tq-tinta-2); }
 
-@media (max-width: 400px) {
-  .op-resultado__linha { grid-template-columns: minmax(0, 1fr); }
-}
 
 /* dois caminhos */
 .tq-secao.op-caminhos { padding-top: 0; }

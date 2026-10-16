@@ -25,6 +25,10 @@ const kalam = Kalam({
 const descricao = 'Crie um link do YouTube que abre direto no app quando alguém toca nele dentro do Instagram.'
 
 export const metadata: Metadata = {
+  // Base dos endereços absolutos das imagens de compartilhamento (opengraph-image.png,
+  // twitter-image.png e apple-icon.png, ao lado deste arquivo). Sem ela, o Next.js
+  // monta esses endereços com localhost.
+  metadataBase: new URL('https://open.tequemedia.com.br'),
   title: 'Open TequeMedia',
   description: descricao,
   openGraph: {
@@ -33,6 +37,11 @@ export const metadata: Metadata = {
     type: 'website',
     locale: 'pt_BR',
     siteName: 'TequeMedia',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Open TequeMedia',
+    description: descricao,
   },
 }
 

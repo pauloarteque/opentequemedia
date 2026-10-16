@@ -51,3 +51,20 @@ export function isPersonalPlaylistId(s: string): boolean {
 export function isPlaylistId(s: string): boolean {
   return PL_RE.test(s) || UU_BASE_RE.test(s) || UU_VARIANT_RE.test(s) || OLAK_RE.test(s) || RD_RE.test(s)
 }
+
+// O alfabeto comum aos identificadores de vídeo e de playlist.
+const ID_ALPHABET_RUN_RE = /^[A-Za-z0-9_-]+/
+
+/**
+ * O trecho do começo do segmento feito só do alfabeto de identificador, e se sobra algo
+ * depois dele. Serve para o link que chega com texto grudado no fim, como "ID tá na mão"
+ * colado no adesivo de Story. O que sobra começa, por construção, com um caractere que
+ * nunca existe num identificador (espaço, +, ponto, vírgula...), então o corte não tem
+ * ambiguidade. Não valida nada: quem chama confere o trecho com isVideoId/isPlaylistId.
+ * Ver SPEC.md §3, "Texto colado depois do link".
+ */
+export function leadingIdRun(segment: string): { run: string; hasTail: boolean } {
+  const match = ID_ALPHABET_RUN_RE.exec(segment)
+  const run = match ? match[0] : ''
+  return { run, hasTail: segment.length > run.length }
+}

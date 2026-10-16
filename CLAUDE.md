@@ -6,7 +6,7 @@ Especificação completa: [SPEC.md](SPEC.md). Cada diretiva abaixo aponta pra se
 
 - `src/app/page.tsx`, `src/components/**`, `src/app/layout.tsx`, `globals.css` = superfície 1. Podem usar marca, React, Next completo.
 - Qualquer resposta de `src/app/{v,s,c,p}/[[...resto]]/route.ts` = superfície 2. String literal `TEQUEMEDIA`, `<link rel="stylesheet">`, `/_next/` e qualquer import de `src/components/**` são PROIBIDOS nesses arquivos e em tudo que importam de `src/server/**`.
-- Texto permitido em superfície 2: só `Abrir no YouTube` e `Não abriu? Toque aqui para assistir`.
+- Texto permitido em superfície 2: `Abrir no YouTube` e `Não abriu? Toque aqui para assistir` na página inteligente, e o texto da página de link quebrado (SPEC §3). Nenhum deles leva marca.
 
 ## Roteamento (SPEC §2.1, §2.2, §5)
 
@@ -26,6 +26,7 @@ Especificação completa: [SPEC.md](SPEC.md). Cada diretiva abaixo aponta pra se
 - Comparação de host: sempre `=== ` exato contra a lista em `src/core/constants.ts`, sobre `new URL(x).hostname`. Nunca `.includes()`, `.endsWith()` ou regex de substring.
 - Nenhum destino de redirect pode vir de banco, arquivo, sessão ou cookie. Se uma tarefa pedir isso, é mudança de arquitetura — parar e avisar, não implementar.
 - `WL`, `LL`, `FL` são playlists pessoais e são recusadas, não acopladas a `PL`/`UU`/`RD` na mesma checagem.
+- Texto colado depois do link (SPEC §3): só aproveita identificador INTEIRO no começo do primeiro segmento, terminado em caractere fora do alfabeto (em `/c`, só no espaço, e o corte mora em `path-format.ts`). Nunca decodifica, nunca completa, e o `%` continua recusado antes de tudo.
 
 ## Página inteligente (SPEC §6)
 

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { decodeChannelSegments, encodeChannelSegments } from '@/core/path-format'
+import { cutChannelSegmentsAtPastedText, decodeChannelSegments, encodeChannelSegments } from '@/core/path-format'
 import type { ChannelFamilyTarget } from '@/core/types'
 
 describe('encodeChannelSegments / decodeChannelSegments — ida e volta', () => {
@@ -50,5 +50,21 @@ describe('decodeChannelSegments — recusas', () => {
 
   it('zero segmentos -> null', () => {
     expect(decodeChannelSegments([])).toBeNull()
+  })
+})
+
+describe('cutChannelSegmentsAtPastedText', () => {
+  it('sem espaço não há texto colado', () => {
+    expect(cutChannelSegmentsAtPastedText(['@MrBeast'])).toBeNull()
+  })
+
+  it('corta no espaço, tira a pontuação e descarta o resto', () => {
+    expect(cutChannelSegmentsAtPastedText(['@MrBeast, se inscreve', 'x'])).toEqual(['@MrBeast'])
+    expect(cutChannelSegmentsAtPastedText(['c', 'veritasium canal'])).toEqual(['c', 'veritasium'])
+  })
+
+  it('segmento que começa com espaço não deixa sobra vazia', () => {
+    expect(cutChannelSegmentsAtPastedText(['c', ' oi'])).toEqual(['c'])
+    expect(cutChannelSegmentsAtPastedText([' oi'])).toBeNull()
   })
 })

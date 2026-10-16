@@ -43,3 +43,21 @@ export function decodeChannelSegments(segments: readonly string[]): ChannelFamil
 
   return null
 }
+
+// Pontuação de fim de frase. Nenhuma delas faz sentido no fim de um handle, de um nome
+// legado ou de um ID de canal colado num texto.
+const PASTED_TAIL_PUNCTUATION_RE = /[.,;:!?)\]}"'»”]+$/
+
+/**
+ * Segmentos de /c que chegaram com texto colado depois do link ("@nome se inscreve").
+ * Corta no primeiro espaço, que não existe em handle, nome legado nem ID de canal, tira
+ * a pontuação de fim de frase do que sobrou e descarta o resto, inclusive os segmentos
+ * seguintes. Sem espaço, devolve null: não há evidência de texto colado. Ver SPEC.md §3.
+ */
+export function cutChannelSegmentsAtPastedText(segments: readonly string[]): string[] | null {
+  const index = segments.findIndex((s) => /\s/.test(s))
+  if (index === -1) return null
+  const head = (segments[index]?.split(/\s/)[0] ?? '').replace(PASTED_TAIL_PUNCTUATION_RE, '')
+  const cut = [...segments.slice(0, index), head].filter((s) => s.length > 0)
+  return cut.length > 0 ? cut : null
+}
